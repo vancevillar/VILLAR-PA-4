@@ -6,15 +6,15 @@ VISUALIZATION
 
 # **A. Visayas Communication DataFrame**
 
-Load the `board2.xlsx` file into a DataFrame named `board`. Create `VisComm` containing students from `Visayas` who are under the `Communication` track. From this subset, display only the columns `Name`, `Gender`, `Math`, `Electronics`, and `Average` (where `Average` is computed across all four subjects). Output the resulting DataFrame and determine the total number of rows.
+Create a DataFrame named `VisComm` containing students from `Visayas` who are under the `Communication` track. From this subset, display only the columns `Name`, `Gender`, `Math`, `Electronics`, and `Average`. Output the resulting DataFrame and determine the total number of rows.
 
-The following Pandas functions and methods were used in this problem:
+The following functions and methods were used in this problem:
 
 • `pd.read_excel('board2.xlsx')` - loads the Excel dataset into a Pandas DataFrame.
 
-• `board[['Math', 'Electronics', 'GEAS', 'Communication']].mean(axis=1)` - calculates the row-wise mean score across all four subject columns to form the `Average` column.
+• `df[['Math', 'Electronics', 'GEAS', 'Communication']].mean(axis=1)` - calculates the row-wise mean score across all four subject columns to form the `Average` column.
 
-• `board.loc[(board['Hometown']=='Visayas') & (board['Track']=='Communication'), ...]` - applies multi-condition Boolean logic using the bitwise AND (`&`) operator to slice specified rows and restrict output columns.
+• `df.loc[(df['Hometown'] == 'Visayas') & (df['Track'] == 'Communication'), ...]` - applies multi-condition Boolean logic using the bitwise AND (`&`) operator to slice specified rows and restrict output columns.
 
 • `len(VisComm)` - calculates and outputs the total number of rows present in the filtered DataFrame.
 
@@ -22,13 +22,13 @@ The following Pandas functions and methods were used in this problem:
 import pandas as pd
 
 
-board = pd.read_excel('board2.xlsx')
-board['Average'] = board[['Math', 'Electronics', 'GEAS', 'Communication']].mean(axis=1)
+df = pd.read_excel('board2.xlsx')
+df['Average'] = df[['Math', 'Electronics', 'GEAS', 'Communication']].mean(axis=1)
 
-VisComm = board.loc[(board['Hometown'] == 'Visayas') & (board['Track'] == 'Communication'), ['Name', 'Gender', 'Math', 'Electronics', 'Average']]
+VisComm = df.loc[(df['Hometown'] == 'Visayas') & (df['Track'] == 'Communication'), ['Name', 'Gender', 'Math', 'Electronics', 'Average']]
 VisComm
 
-print("Number of rows:", len(VisComm))
+len(VisComm)
 ```
 
 # **B. Visayas Female DataFrame**
@@ -37,22 +37,12 @@ Create a DataFrame named `VisFemale` containing all `Female` students from `Visa
 
 The following functions and methods were used in this problem:
 
-• `pd.read_excel('board2.xlsx')` - loads the Excel dataset into a Pandas DataFrame.
+• `df.loc[(df['Hometown'] == 'Visayas') & (df['Gender'] == 'Female'), ...]` - filters rows using Boolean indexing based on categorical values in `Hometown` and `Gender` while selecting specified output columns.
 
-• `board[['Math', 'Electronics', 'GEAS', 'Communication']].mean(axis=1)` - calculates the row-wise mean score across all four subject columns to form the `Average` column.
-
-• `board.loc[(board['Hometown']=='Visayas') & (board['Gender']=='Female'), ['Name', 'Track', 'GEAS', 'Electronics', 'Average']]` - filters rows using Boolean indexing based on categorical values in `Hometown` and `Gender` while selecting specified columns.
-
-• `VisFemale.loc[VisFemale['Average'] >= 60]` - performs a conditional filtering operation on `VisFemale` to display only students with an average score of 60 or higher.
+• `VisFemale.loc[VisFemale['Average'] >= 60]` - performs a conditional filtering operation on `VisFemale` to display only students with an overall average score of 60 or higher.
 
 ```python
-import pandas as pd
-
-
-board = pd.read_excel('board2.xlsx')
-board['Average'] = board[['Math', 'Electronics', 'GEAS', 'Communication']].mean(axis=1)
-
-VisFemale = board.loc[(board['Hometown'] == 'Visayas') & (board['Gender'] == 'Female'), ['Name', 'Track', 'GEAS', 'Electronics', 'Average']]
+VisFemale = df.loc[(df['Hometown'] == 'Visayas') & (df['Gender'] == 'Female'), ['Name', 'Track', 'GEAS', 'Electronics', 'Average']]
 VisFemale
 
 VisFemale.loc[VisFemale['Average'] >= 60]
@@ -60,54 +50,53 @@ VisFemale.loc[VisFemale['Average'] >= 60]
 
 # **C. Category-Average Visualization**
 
-Analyze how student performance (`Average`) varies across different categories (`Track`, `Gender`, and `Hometown`). Compute group averages for each category, display the summary statistics, and visualize the comparisons using bar graphs generated with `matplotlib.pyplot`.
+Analyze how student performance (`Average`) varies across different categories (`Track`, `Gender`, and `Hometown`). Compute group averages for each category, display the summary statistics, and visualize the comparisons using bar graphs generated with `matplotlib.pyplot` along with annotated interpretations.
 
 The following functions and methods were used in this problem:
 
-• `pd.read_excel('board2.xlsx')` - loads the Excel dataset into a Pandas DataFrame.
+• `df.groupby('Category')['Average'].mean()` - groups the DataFrame by specified categorical columns (`Track`, `Gender`, `Hometown`) and calculates the arithmetic mean of overall average scores.
 
-• `board[['Math', 'Electronics', 'GEAS', 'Communication']].mean(axis=1)` - calculates the row-wise mean score across all four subject columns to form the `Average` column.
+• `plt.figure(figsize=(15, 4))` - initializes a plot figure with custom dimensions.
 
-• `board.groupby('Category')['Average'].mean()` - groups the dataset by specified categorical columns and calculates the arithmetic mean of overall average scores for each group.
+• `plt.subplot(1, 3, i)` - creates individual subplots within a 1-row by 3-column grid layout.
 
-• `plt.subplots(1, 3, figsize=(16, 5), sharey=True)` - sets up a grid layout of three side-by-side subplots sharing a consistent y-axis scale.
+• `plt.bar(Series.index, Series.values)` - generates vertical bar charts using categorical series index labels for the x-axis and computed mean scores for bar heights.
 
-• `axes[i].bar(...)` - creates vertical bar charts to compare mean performance across `Track`, `Gender`, and `Hometown`.
-
-• `plt.tight_layout()` - optimizes plot spacing to eliminate layout overlap between subplots.
+• `fig.text(...)` - appends custom multi-line text annotations to the figure layout to detail the statistical interpretations.
 
 ```python
 import pandas as pd
 import matplotlib.pyplot as plt
 
 
-board = pd.read_excel('board2.xlsx')
-board['Average'] = board[['Math', 'Electronics', 'GEAS', 'Communication']].mean(axis=1)
+df = pd.read_excel('board2.xlsx')
+df['Average'] = df[['Math', 'Electronics', 'GEAS', 'Communication']].mean(axis=1)
 
-track_mean = board.groupby('Track')['Average'].mean().reset_index()
-gender_mean = board.groupby('Gender')['Average'].mean().reset_index()
-hometown_mean = board.groupby('Hometown')['Average'].mean().reset_index()
+track_mean = df.groupby('Track')['Average'].mean()
+track_mean
+gender_mean = df.groupby('Gender')['Average'].mean()
+gender_mean
+hometown_mean = df.groupby('Hometown')['Average'].mean()
+hometown_mean
 
-("Track Average:\n", track_mean)
-("\nGender Average:\n", gender_mean)
-("\nHometown Average:\n", hometown_mean)
+fig = plt.figure(figsize=(15, 4))
 
-fig, axes = plt.subplots(1, 3, figsize=(16, 5), sharey=True)
+plt.subplot(1, 3, 1)
+plt.bar(track_mean.index, track_mean.values)
+plt.title('Mean Average by Track')
 
-axes[0].bar(track_mean['Track'], track_mean['Average'], color='steelblue', edgecolor='black')
-axes[0].set_title('Mean Average by Track')
-axes[0].set_xlabel('Track')
-axes[0].set_ylabel('Mean Score')
-axes[0].set_ylim(0, 100)
+plt.subplot(1, 3, 2)
+plt.bar(gender_mean.index, gender_mean.values)
+plt.title('Mean Average by Gender')
 
-axes[1].bar(gender_mean['Gender'], gender_mean['Average'], color='sandybrown', edgecolor='black')
-axes[1].set_title('Mean Average by Gender')
-axes[1].set_xlabel('Gender')
-
-axes[2].bar(hometown_mean['Hometown'], hometown_mean['Average'], color='mediumseagreen', edgecolor='black')
-axes[2].set_title('Mean Average by Hometown')
-axes[2].set_xlabel('Hometown')
+plt.subplot(1, 3, 3)
+plt.bar(hometown_mean.index, hometown_mean.values)
+plt.title('Mean Average by Hometown')
 
 plt.tight_layout()
+fig.text(0, -0.2, 'Interpretation\n\n1. Communication has the highest sample mean average in the Track category.\n2. Male has the highest sample mean average in the Gender category.\n3. Luzon has the highest sample mean average in the Hometown category.')
 plt.show()
 ```
+
+
+September 17, 2026- update README output uploaded
